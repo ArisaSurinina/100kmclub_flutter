@@ -9,8 +9,28 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  void _showCreateGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Create Group'),
+          content: const Text('Test Modal'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -295,38 +315,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _groupsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Your Groups',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.85),
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
+Widget _groupsSection() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your Groups',
+                  style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 0.85),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                   ),
-                  SizedBox(height: 6),
-                  Text(
-                    'Turn your walks into a habit together.',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.35),
-                      fontSize: 12,
-                    ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Turn your walks into a habit together.',
+                  style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 0.35),
+                    fontSize: 12,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Container(
+          ),
+          const SizedBox(width: 16),
+          GestureDetector(
+            onTap: _showCreateGroupDialog,
+            child: Container(
               height: 44,
               padding: const EdgeInsets.symmetric(horizontal: 18),
               decoration: BoxDecoration(
@@ -365,32 +387,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(255, 255, 255, 0.02),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color.fromRGBO(255, 255, 255, 0.04),
-            ),
           ),
-          child: const Center(
-            child: Text(
-              'You have not joined any groups yet',
-              style: TextStyle(
-                color: Color.fromRGBO(255, 255, 255, 0.4),
-                fontSize: 14,
-              ),
-            ),
+        ],
+      ),
+      const SizedBox(height: 20),
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(255, 255, 255, 0.02),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color.fromRGBO(255, 255, 255, 0.04),
           ),
         ),
-      ],
-    );
-  }
+        child: const Center(
+          child: Text(
+            'You have not joined any groups yet',
+            style: TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 0.4),
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
 }
 
 class StatBox extends StatelessWidget {
