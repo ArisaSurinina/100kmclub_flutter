@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'active_group_screen.dart';
 
 class FormingGroupScreen extends StatefulWidget {
   const FormingGroupScreen({super.key});
@@ -221,7 +222,17 @@ class _FormingGroupScreenState extends State<FormingGroupScreen> {
                 child: _input('Enter group name to confirm'),
               ),
               const SizedBox(width: 8),
-              _lockButton(),
+              GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ActiveGroupScreen(),
+      ),
+    );
+  },
+  child: _lockButton(),
+),
             ],
           ),
           const SizedBox(height: 16),
