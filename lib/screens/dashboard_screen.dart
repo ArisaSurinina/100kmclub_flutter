@@ -10,24 +10,182 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   void _showCreateGroupDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Create Group'),
-          content: const Text('Test Modal'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Close'),
+  showDialog(
+    context: context,
+    barrierColor: const Color.fromRGBO(0, 0, 0, 0.8),
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(
+            maxWidth: 512,
+          ),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F0F10),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
             ),
-          ],
-        );
-      },
-    );
-  }
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    size: 24,
+                    color: Color.fromRGBO(255, 255, 255, 0.7),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 32),
+                  Center(
+                    child: Text(
+                      'Create Group',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    const Text(
+      'Group Name',
+      style: TextStyle(
+        color: Color(0xFFA1A1AA),
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+    const SizedBox(height: 4),
+
+    TextField(
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Morning Walkers',
+        hintStyle: const TextStyle(
+          color: Color.fromRGBO(255, 255, 255, 0.25),
+        ),
+        filled: true,
+        fillColor: const Color.fromRGBO(255, 255, 255, 0.03),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color.fromRGBO(255, 255, 255, 0.06),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color.fromRGBO(46, 230, 166, 0.3),
+          ),
+        ),
+      ),
+    ),
+
+    const SizedBox(height: 16),
+
+    Container(
+  padding: const EdgeInsets.all(12),
+  decoration: BoxDecoration(
+    color: const Color.fromRGBO(46, 230, 166, 0.08),
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(
+      color: const Color.fromRGBO(46, 230, 166, 0.15),
+    ),
+  ),
+  child: const Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(
+        Icons.check_circle_outline,
+        size: 14,
+        color: Color(0xFF2EE6A6),
+      ),
+      SizedBox(width: 8),
+      Expanded(
+        child: Text(
+          'Groups are commitment contracts. Once locked, all members share responsibility for the streak.',
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 0.6),
+            fontSize: 12,
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+
+const SizedBox(height: 16),
+
+Container(
+  height: 48,
+  width: double.infinity,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(14),
+    gradient: const LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Color.fromRGBO(46, 230, 166, 0.9),
+        Color.fromRGBO(30, 200, 140, 0.9),
+      ],
+    ),
+    boxShadow: const [
+      BoxShadow(
+        color: Color.fromRGBO(46, 230, 166, 0.25),
+        blurRadius: 25,
+      ),
+      BoxShadow(
+        color: Color.fromRGBO(46, 230, 166, 0.15),
+        blurRadius: 50,
+      ),
+    ],
+  ),
+  child: const Center(
+    child: Text(
+      'Create Group',
+      style: TextStyle(
+        color: Color.fromRGBO(0, 0, 0, 0.85),
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ),
+),
+],
+),
+                  SizedBox(height: 32),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) { 
