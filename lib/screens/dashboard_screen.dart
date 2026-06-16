@@ -1,5 +1,6 @@
  import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'forming_group_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -139,37 +140,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 const SizedBox(height: 16),
 
-Container(
-  height: 48,
-  width: double.infinity,
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(14),
-    gradient: const LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        Color.fromRGBO(46, 230, 166, 0.9),
-        Color.fromRGBO(30, 200, 140, 0.9),
+GestureDetector(
+  onTap: () {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const FormingGroupScreen(),
+      ),
+    );
+  },
+  child: Container(
+    height: 48,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color.fromRGBO(46, 230, 166, 0.9),
+          Color.fromRGBO(30, 200, 140, 0.9),
+        ],
+      ),
+      boxShadow: const [
+        BoxShadow(
+          color: Color.fromRGBO(46, 230, 166, 0.25),
+          blurRadius: 25,
+        ),
+        BoxShadow(
+          color: Color.fromRGBO(46, 230, 166, 0.15),
+          blurRadius: 50,
+        ),
       ],
     ),
-    boxShadow: const [
-      BoxShadow(
-        color: Color.fromRGBO(46, 230, 166, 0.25),
-        blurRadius: 25,
-      ),
-      BoxShadow(
-        color: Color.fromRGBO(46, 230, 166, 0.15),
-        blurRadius: 50,
-      ),
-    ],
-  ),
-  child: const Center(
-    child: Text(
-      'Create Group',
-      style: TextStyle(
-        color: Color.fromRGBO(0, 0, 0, 0.85),
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
+    child: const Center(
+      child: Text(
+        'Create Group',
+        style: TextStyle(
+          color: Color.fromRGBO(0, 0, 0, 0.85),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     ),
   ),
