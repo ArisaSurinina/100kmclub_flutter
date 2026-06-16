@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dashboard_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -534,7 +535,16 @@ Widget build(BuildContext context) {
   }
 
   Widget _primaryButton(String text) {
-    return Container(
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+    },
+    child: Container(
       height: 56,
       width: double.infinity,
       decoration: BoxDecoration(
@@ -568,8 +578,9 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _divider() {
     return Container(
