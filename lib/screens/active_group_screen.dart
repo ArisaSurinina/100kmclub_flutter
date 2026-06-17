@@ -63,7 +63,7 @@ class ActiveGroupScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Realskies 🇱🇹 💩💨🌙📝🇩🇰',
+                'Realskies 🇱🇹 💩💨🌙...',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -106,20 +106,23 @@ class ActiveGroupScreen extends StatelessWidget {
           ),
         ),
         GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const GroupSettingsScreen(),
-      ),
-    );
-  },
-  child: const Icon(
-    Icons.settings_outlined,
-    color: Color.fromRGBO(255, 255, 255, 0.5),
-    size: 26,
-  ),
-),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const GroupSettingsScreen(),
+              ),
+            );
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8),
+            child: Icon(
+              Icons.settings_outlined,
+              color: Color.fromRGBO(255, 255, 255, 0.5),
+              size: 22,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -135,31 +138,17 @@ class ActiveGroupScreen extends StatelessWidget {
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Container(
-          color: const Color.fromRGBO(255, 255, 255, 0.02),
-          child: const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.photo_camera_outlined,
-                  color: Color.fromRGBO(255, 255, 255, 0.2),
-                  size: 32,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'No group photo',
-                  style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.3),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200',
+              fit: BoxFit.cover,
             ),
           ),
-        ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
@@ -168,86 +157,74 @@ class ActiveGroupScreen extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _streakCard(),
+          child: _statCard(
+            icon: Icons.local_fire_department,
+            iconColor: const Color(0xFFFFB832),
+            value: '0',
+            label: 'Group Streak',
+            valueColor: const Color(0xFFFFB832),
+            bgColor: const Color.fromRGBO(255, 184, 50, 0.08),
+            borderColor: const Color.fromRGBO(255, 184, 50, 0.15),
+            valueSize: 30,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _ageCard(),
+          child: _statCard(
+            icon: Icons.access_time,
+            iconColor: const Color.fromRGBO(255, 255, 255, 0.5),
+            value: 'New group',
+            label: 'Group Age',
+            valueColor: const Color.fromRGBO(255, 255, 255, 0.7),
+            bgColor: const Color.fromRGBO(255, 255, 255, 0.03),
+            borderColor: const Color.fromRGBO(255, 255, 255, 0.06),
+            valueSize: 20,
+          ),
         ),
       ],
     );
   }
 
-  Widget _streakCard() {
+  Widget _statCard({
+    required IconData icon,
+    required Color iconColor,
+    required String value,
+    required String label,
+    required Color valueColor,
+    required Color bgColor,
+    required Color borderColor,
+    required double valueSize,
+  }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color.fromRGBO(255, 184, 50, 0.08),
+        color: bgColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 184, 50, 0.15),
-        ),
+        border: Border.all(color: borderColor),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(
-            Icons.local_fire_department,
-            color: Color(0xFFFFB832),
-            size: 28,
+            icon,
+            color: iconColor,
+            size: 24,
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
-            '0',
+            value,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFFFFB832),
-              fontSize: 30,
+              color: valueColor,
+              fontSize: valueSize,
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 4),
           Text(
-            'Group Streak',
+            label,
             style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.5),
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _ageCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(255, 255, 255, 0.03),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.06),
-        ),
-      ),
-      child: const Column(
-        children: [
-          Icon(
-            Icons.access_time,
-            color: Color.fromRGBO(255, 255, 255, 0.5),
-            size: 28,
-          ),
-          SizedBox(height: 10),
-          Text(
-            'New group',
-            style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.7),
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Group Age',
-            style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.4),
+              color: label == 'Group Streak'
+                  ? const Color.fromRGBO(255, 255, 255, 0.5)
+                  : const Color.fromRGBO(255, 255, 255, 0.4),
               fontSize: 12,
             ),
           ),
@@ -260,10 +237,10 @@ class ActiveGroupScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
-          children: [
+        Row(
+          children: const [
             Icon(
-              Icons.group_outlined,
+              Icons.groups_2_outlined,
               color: Color.fromRGBO(255, 255, 255, 0.6),
               size: 18,
             ),
@@ -276,7 +253,7 @@ class ActiveGroupScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(width: 6),
+            SizedBox(width: 8),
             Text(
               '(1)',
               style: TextStyle(
@@ -287,100 +264,105 @@ class ActiveGroupScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(255, 255, 255, 0.03),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color.fromRGBO(255, 255, 255, 0.06),
+        _memberCard(),
+      ],
+    );
+  }
+
+  Widget _memberCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(255, 255, 255, 0.03),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromRGBO(255, 255, 255, 0.06),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Color(0xFF27272A),
+              shape: BoxShape.circle,
             ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF27272A),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Text(
-                    'A',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+            child: const Center(
+              child: Text(
+                'A',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(width: 16),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            'Arisa Surinina',
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                    Flexible(
+                      child: Text(
+                        'Arisa Surinina',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
-                        SizedBox(width: 6),
-                        Text(
-                          '(you)',
-                          style: TextStyle(
-                            color: Color.fromRGBO(255, 255, 255, 0.4),
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(width: 6),
                     Text(
-                      'In progress',
+                      '(you)',
                       style: TextStyle(
-                        color: Color.fromRGBO(255, 255, 255, 0.5),
-                        fontSize: 12,
+                        color: Color.fromRGBO(255, 255, 255, 0.4),
+                        fontSize: 11,
                       ),
                     ),
                   ],
                 ),
+                SizedBox(height: 2),
+                Text(
+                  'In progress',
+                  style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 0.5),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '44.7 km',
+                style: TextStyle(
+                  color: Color(0xFF2EE6A6),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              const SizedBox(width: 12),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '44.7 km',
-                    style: TextStyle(
-                      color: Color(0xFF2EE6A6),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'this month',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.3),
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
+              SizedBox(height: 2),
+              Text(
+                'this month',
+                style: TextStyle(
+                  color: Color.fromRGBO(255, 255, 255, 0.3),
+                  fontSize: 10,
+                ),
               ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
