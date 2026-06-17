@@ -40,7 +40,7 @@ class GroupSettingsScreen extends StatelessWidget {
                   color: Color.fromRGBO(239, 68, 68, 0.6),
                 ),
                 const SizedBox(height: 12),
-                _dangerCard(),
+                _dangerCard(context),
               ],
             ),
           ),
@@ -182,6 +182,139 @@ void _showChangeGroupNameDialog(BuildContext context) {
   );
 }
 
+void _showLeaveGroupDialog(BuildContext context) {
+  final controller = TextEditingController();
+
+  showDialog(
+    context: context,
+    barrierColor: const Color.fromRGBO(0, 0, 0, 0.8),
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 512),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F0F10),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(dialogContext),
+                  child: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: Color.fromRGBO(255, 255, 255, 0.7),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Leave group',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Leaving this group will dissolve it.',
+                    style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.75),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'This action cannot be undone.',
+                    style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.45),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Type the group name to confirm.',
+                    style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.7),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Realskies 🇱🇹 💩💨🌙...',
+                      hintStyle: const TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 0.25),
+                      ),
+                      filled: true,
+                      fillColor: const Color.fromRGBO(255, 255, 255, 0.03),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.06),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(46, 230, 166, 0.3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(dialogContext),
+                          child: _modalCancelButton('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(dialogContext),
+                          child: _modalDangerButton('Leave group'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 Widget _modalGreenButton(String text) {
   return Container(
     width: double.infinity,
@@ -244,6 +377,43 @@ Widget _modalCancelButton(String text) {
   );
 }
 
+Widget _modalDangerButton(String text) {
+  return Container(
+    width: double.infinity,
+    height: 48,
+    decoration: BoxDecoration(
+      color: const Color(0xFFEF4444),
+      borderRadius: BorderRadius.circular(6),
+      boxShadow: const [
+        BoxShadow(
+          color: Color.fromRGBO(0, 0, 0, 0.2),
+          blurRadius: 6,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.logout,
+          color: Colors.white,
+          size: 16,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
   Widget _sectionTitle(
     String text, {
     Color color = const Color.fromRGBO(255, 255, 255, 0.4),
@@ -302,41 +472,45 @@ Widget _modalCancelButton(String text) {
     );
   }
 
-  Widget _dangerCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(255, 255, 255, 0.04),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.08),
+  Widget _dangerCard(BuildContext context) {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color.fromRGBO(255, 255, 255, 0.04),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: const Color.fromRGBO(255, 255, 255, 0.08),
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Leaving this group will dissolve it.',
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 0.75),
+            fontSize: 14,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Leaving this group will dissolve it.',
-            style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.75),
-              fontSize: 14,
-            ),
+        const SizedBox(height: 4),
+        const Text(
+          'This action cannot be undone.',
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 0.45),
+            fontSize: 12,
           ),
-          const SizedBox(height: 4),
-          const Text(
-            'This action cannot be undone.',
-            style: TextStyle(
-              color: Color.fromRGBO(255, 255, 255, 0.45),
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 12),
-          _leaveGroupButton(),
-        ],
-      ),
-    );
-  }
+        ),
+        const SizedBox(height: 12),
+        _leaveGroupButton(
+          onTap: () {
+            _showLeaveGroupDialog(context);
+          },
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _settingsRow({
   required IconData icon,
@@ -424,8 +598,13 @@ Widget _modalCancelButton(String text) {
     );
   }
 
-  Widget _leaveGroupButton() {
-    return Container(
+  Widget _leaveGroupButton({
+  VoidCallback? onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(8),
+    child: Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -459,8 +638,9 @@ Widget _modalCancelButton(String text) {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   BoxDecoration _outerCardDecoration() {
     return BoxDecoration(
