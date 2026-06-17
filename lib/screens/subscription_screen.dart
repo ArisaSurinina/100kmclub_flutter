@@ -9,127 +9,93 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  bool yearly = true;
+  String selectedBilling = 'yearly';
+  bool loading = false;
+
+  void _goToDashboard() {
+    setState(() {
+      loading = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+    });
+  }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF1A1A1F),
-            Color(0xFF16161A),
-          ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF1A1A1F),
+              Color(0xFF16161A),
+            ],
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
-          children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 512),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _header(),
-                    const SizedBox(height: 24),
-                    _freeCard(),
-                    const SizedBox(height: 32),
-                    _trialCard(),
-                    const SizedBox(height: 32),
-                    _paidCard(),
-                    const SizedBox(height: 24),
-                    _bottomNote(),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 80),
+            child: Column(
+              children: [
+                _header(),
+                const SizedBox(height: 32),
+                _freeCard(),
+                const SizedBox(height: 32),
+                _trialCard(),
+                const SizedBox(height: 32),
+                _paidCard(),
+                const SizedBox(height: 24),
+                _reassuranceCard(),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _header() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
       children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(255, 255, 255, 0.04),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color.fromRGBO(255, 255, 255, 0.06),
-            ),
-          ),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(
-              Icons.arrow_back,
-              size: 22,
-              color: Color.fromRGBO(255, 255, 255, 0.6),
+        ShaderMask(
+          shaderCallback: (bounds) {
+            return const LinearGradient(
+              colors: [
+                Color(0xFF2EE6A6),
+                Color(0xFFFF8A50),
+              ],
+            ).createShader(bounds);
+          },
+          child: const Text(
+            'Welcome to 100KM club!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Choose Your Plan',
-                style: TextStyle(
-                  color: Color.fromRGBO(255, 255, 255, 0.9),
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Wrap(
-                children: [
-                  const Text(
-                    'Unlock the full ',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.4),
-                      fontSize: 18,
-                    ),
-                  ),
-                  ShaderMask(
-                    shaderCallback: (bounds) {
-                      return const LinearGradient(
-                        colors: [
-                          Color(0xFF2EE6A6),
-                          Color(0xFFFF8A50),
-                        ],
-                      ).createShader(bounds);
-                    },
-                    child: const Text(
-                      '100KM club',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    ' experience',
-                    style: TextStyle(
-                      color: Color.fromRGBO(255, 255, 255, 0.4),
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+        const SizedBox(height: 8),
+        const Text(
+          'Choose how you want to build your walking habit.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 0.5),
+            fontSize: 14,
           ),
         ),
       ],
@@ -138,433 +104,195 @@ Widget build(BuildContext context) {
 
   Widget _freeCard() {
     return _planCard(
-      accent: const Color(0xFF2EE6A6),
-      borderColor: const Color.fromRGBO(46, 230, 166, 0.25),
-      backgroundStart: const Color.fromRGBO(46, 230, 166, 0.08),
-      backgroundEnd: const Color.fromRGBO(46, 230, 166, 0.02),
-      icon: Icons.bolt_outlined,
-      pillText: 'Free plan · €0',
-      title: 'Build the habit on your own.',
-      features: const [
-        'Walk on your own',
-        'Build your personal monthly streak',
-        'Your walking history stays with you',
-      ],
-      buttonText: 'Continue on your own',
+      isGold: false,
+      child: Column(
+        children: [
+          _labelBox('Free plan · €0'),
+          _divider(),
+          _headline(
+            icon: Icons.bolt,
+            title: 'Build the habit on your own.',
+            isGold: false,
+          ),
+          const SizedBox(height: 20),
+          _features(
+            [
+              'Walk on your own',
+              'Build your personal monthly streak',
+              'Your walking history stays with you',
+            ],
+            isGold: false,
+          ),
+          const SizedBox(height: 20),
+          _ctaButton('Continue on your own'),
+        ],
+      ),
     );
   }
 
   Widget _trialCard() {
-    return _planCard(
-      accent: const Color(0xFF2EE6A6),
-      borderColor: const Color.fromRGBO(46, 230, 166, 0.25),
-      backgroundStart: const Color.fromRGBO(46, 230, 166, 0.08),
-      backgroundEnd: const Color.fromRGBO(46, 230, 166, 0.02),
-      icon: Icons.auto_awesome,
-      badgeText: 'Recommended',
-      badgeColor1: const Color(0xFF2EE6A6),
-      badgeColor2: const Color(0xFF1EC896),
-      pillText: '3 months free trial · €0',
-      title: "See what it's like to walk together.",
-      features: const [
-        'Create walking groups with friends',
-        'Track your personal and group walk history',
-        'Keep personal and group streaks',
-        'Collect points and turn your walks into rewards',
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        _planCard(
+          isGold: false,
+          child: Column(
+            children: [
+              _labelBox('3 months free trial · €0'),
+              _divider(),
+              _headline(
+                icon: Icons.auto_awesome,
+                title: "See what it's like to walk together.",
+                isGold: false,
+              ),
+              const SizedBox(height: 20),
+              _features(
+                [
+                  'Create walking groups with friends',
+                  'Track your personal and group walk history',
+                  'Keep personal and group streaks',
+                  'Collect points and turn your walks into rewards',
+                ],
+                isGold: false,
+              ),
+              _supportingLine(),
+              const SizedBox(height: 20),
+              _ctaButton('Start free trial'),
+            ],
+          ),
+        ),
+        _topBadge('Recommended', isGold: false),
       ],
-      supportText:
-          'Turn walking into a habit that actually sticks — shared streaks make skipping harder.',
-      buttonText: 'Start free trial',
     );
   }
 
   Widget _paidCard() {
-    return _planCard(
-      accent: const Color(0xFFFFB832),
-      borderColor: const Color.fromRGBO(255, 180, 50, 0.3),
-      backgroundStart: const Color.fromRGBO(255, 180, 50, 0.12),
-      backgroundEnd: const Color.fromRGBO(255, 150, 30, 0.05),
-      icon: Icons.workspace_premium_outlined,
-      badgeText: 'Best value',
-      badgeColor1: const Color(0xFFFFB832),
-      badgeColor2: const Color(0xFFFF9500),
-      title: 'Keep walking together.',
-      showBilling: true,
-      features: const [
-        'Create walking groups with friends',
-        'Track your personal and group walk history',
-        'Keep personal and group streaks',
-        'Collect points and turn your walks into rewards',
-      ],
-      supportText:
-          'Turn walking into a habit that actually sticks — shared streaks make skipping harder.',
-      buttonText: 'Commit together',
-    );
-  }
+    final isYearly = selectedBilling == 'yearly';
 
-  Widget _planCard({
-    required Color accent,
-    required Color borderColor,
-    required Color backgroundStart,
-    required Color backgroundEnd,
-    required IconData icon,
-    required String title,
-    required List<String> features,
-    required String buttonText,
-    String? pillText,
-    String? badgeText,
-    Color? badgeColor1,
-    Color? badgeColor2,
-    String? supportText,
-    bool showBilling = false,
-  }) {
     return Stack(
       clipBehavior: Clip.none,
-      alignment: Alignment.topCenter,
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [backgroundStart, backgroundEnd],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: borderColor.withOpacity(0.35),
-                blurRadius: 30,
-              ),
-            ],
-          ),
+        _planCard(
+          isGold: true,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (pillText != null) ...[
-                _pricePill(pillText),
-                const SizedBox(height: 20),
-                _divider(),
-                const SizedBox(height: 20),
-              ],
+              _headline(
+                icon: Icons.workspace_premium,
+                title: 'Keep walking together.',
+                isGold: true,
+              ),
+              const SizedBox(height: 16),
+              _billingToggle(),
+              const SizedBox(height: 16),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
                 children: [
-                  _iconBox(icon, accent),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        color: Color.fromRGBO(255, 255, 255, 0.9),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        height: 1.15,
-                      ),
+                  Text(
+                    isYearly ? '€12' : '€1.50',
+                    style: const TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.95),
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    isYearly ? '/ year' : '/ month',
+                    style: const TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.5),
+                      fontSize: 14,
                     ),
                   ),
                 ],
               ),
-              if (showBilling) ...[
-                const SizedBox(height: 28),
-                _billingToggle(),
-                const SizedBox(height: 26),
-                _priceBlock(),
-              ],
-              const SizedBox(height: 26),
-              ...features.map((text) => _featureRow(text, accent)),
-              if (supportText != null) ...[
-                const SizedBox(height: 20),
-                _divider(),
-                const SizedBox(height: 16),
-                Text(
-                  supportText,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.55),
-                    fontSize: 18,
-                    height: 1.5,
+              if (isYearly) ...[
+                const SizedBox(height: 4),
+                const Text(
+                  "That's just €1 per month",
+                  style: TextStyle(
+                    color: Color(0xFF2EE6A6),
+                    fontSize: 13,
                   ),
                 ),
               ],
-              const SizedBox(height: 28),
-              _primaryButton(buttonText),
+              const SizedBox(height: 20),
+              _features(
+                [
+                  'Create walking groups with friends',
+                  'Track your personal and group walk history',
+                  'Keep personal and group streaks',
+                  'Collect points and turn your walks into rewards',
+                ],
+                isGold: true,
+              ),
+              _supportingLine(),
+              const SizedBox(height: 20),
+              _ctaButton('Commit together'),
             ],
           ),
         ),
-        if (badgeText != null)
-          Positioned(
-            top: -14,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(999),
-                gradient: LinearGradient(
-                  colors: [
-                    badgeColor1 ?? const Color(0xFF2EE6A6),
-                    badgeColor2 ?? const Color(0xFF1EC896),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (badgeColor1 ?? const Color(0xFF2EE6A6))
-                        .withOpacity(0.45),
-                    blurRadius: 15,
-                  ),
-                ],
-              ),
-              child: Text(
-                badgeText,
-                style: const TextStyle(
-                  color: Color.fromRGBO(0, 0, 0, 0.85),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
+        _topBadge('Best value', isGold: true),
       ],
     );
   }
 
-  Widget _pricePill(String text) {
-  return Container(
-    width: double.infinity,
-    constraints: const BoxConstraints(
-      minHeight: 44,
-    ),
-    alignment: Alignment.center,
+  Widget _planCard({
+    required bool isGold,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isGold
+              ? const [
+                  Color.fromRGBO(255, 180, 50, 0.12),
+                  Color.fromRGBO(255, 150, 30, 0.05),
+                ]
+              : const [
+                  Color.fromRGBO(46, 230, 166, 0.08),
+                  Color.fromRGBO(46, 230, 166, 0.02),
+                ],
+        ),
+        border: Border.all(
+          color: isGold
+              ? const Color.fromRGBO(255, 180, 50, 0.3)
+              : const Color.fromRGBO(46, 230, 166, 0.25),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isGold
+                ? const Color.fromRGBO(255, 180, 50, 0.15)
+                : const Color.fromRGBO(46, 230, 166, 0.1),
+            blurRadius: 30,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _labelBox(String text) {
+    return Container(
+      width: double.infinity,
+      constraints: const BoxConstraints(minHeight: 36),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(255, 180, 50, 0.06),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color.fromRGBO(255, 180, 50, 0.25),
         ),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Color.fromRGBO(255, 255, 255, 0.6),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _iconBox(IconData icon, Color accent) {
-    return Container(
-      width: 54,
-      height: 54,
-      decoration: BoxDecoration(
-        color: accent.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withOpacity(0.25)),
-      ),
-      child: Icon(
-        icon,
-        color: accent,
-        size: 28,
-      ),
-    );
-  }
-
-  Widget _featureRow(String text, Color accent) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Container(
-            width: 26,
-            height: 26,
-            decoration: BoxDecoration(
-              color: accent.withOpacity(0.15),
-              shape: BoxShape.circle,
-              border: Border.all(color: accent.withOpacity(0.25)),
-            ),
-            child: Icon(
-              Icons.check,
-              color: accent,
-              size: 16,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: Color.fromRGBO(255, 255, 255, 0.75),
-                fontSize: 18,
-                height: 1.3,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _billingToggle() {
-    return Container(
-      height: 66,
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: const Color.fromRGBO(0, 0, 0, 0.3),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.08),
-        ),
-      ),
-      child: Row(
-        children: [
-          _billingTab('Monthly', !yearly),
-          _billingTab('Yearly', yearly, showSave: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _billingTab(String text, bool active, {bool showSave = false}) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            yearly = text == 'Yearly';
-          });
-        },
-        child: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-            color: active
-                ? const Color.fromRGBO(255, 255, 255, 0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Center(
-            child: showSave
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        text,
-                        style: TextStyle(
-                          color: active
-                              ? const Color.fromRGBO(255, 255, 255, 0.95)
-                              : const Color.fromRGBO(255, 255, 255, 0.5),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromRGBO(46, 230, 166, 0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          '★ Save 33%',
-                          style: TextStyle(
-                            color: Color(0xFF2EE6A6),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Text(
-                    text,
-                    style: TextStyle(
-                      color: active
-                          ? const Color.fromRGBO(255, 255, 255, 0.95)
-                          : const Color.fromRGBO(255, 255, 255, 0.5),
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _priceBlock() {
-    return Center(
-      child: Column(
-        children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: yearly ? '€12' : '€1.50',
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.95),
-                    fontSize: 42,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                TextSpan(
-                  text: yearly ? ' / year' : ' / month',
-                  style: const TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 0.5),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (yearly) ...[
-            const SizedBox(height: 8),
-            const Text(
-              "That’s just €1 per month",
-              style: TextStyle(
-                color: Color(0xFF2EE6A6),
-                fontSize: 18,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _primaryButton(String text) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const DashboardScreen(),
-        ),
-      );
-    },
-    child: Container(
-      height: 56,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF2EE6A6),
-            Color(0xFF1EC896),
-          ],
-        ),
         boxShadow: const [
           BoxShadow(
-            color: Color.fromRGBO(46, 230, 166, 0.3),
-            blurRadius: 25,
-          ),
-          BoxShadow(
-            color: Color.fromRGBO(46, 230, 166, 0.15),
-            blurRadius: 50,
+            color: Color.fromRGBO(255, 180, 50, 0.08),
+            blurRadius: 12,
           ),
         ],
       ),
@@ -572,19 +300,19 @@ Widget build(BuildContext context) {
         child: Text(
           text,
           style: const TextStyle(
-            color: Color.fromRGBO(0, 0, 0, 0.85),
-            fontSize: 18,
+            color: Color.fromRGBO(255, 255, 255, 0.6),
+            fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _divider() {
     return Container(
       height: 1,
+      margin: const EdgeInsets.symmetric(vertical: 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -597,24 +325,300 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _bottomNote() {
+  Widget _headline({
+    required IconData icon,
+    required String title,
+    required bool isGold,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: isGold
+                ? const Color.fromRGBO(255, 180, 50, 0.15)
+                : const Color.fromRGBO(46, 230, 166, 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isGold
+                  ? const Color.fromRGBO(255, 180, 50, 0.25)
+                  : const Color.fromRGBO(46, 230, 166, 0.2),
+            ),
+          ),
+          child: Icon(
+            icon,
+            color: isGold ? const Color(0xFFFFB832) : const Color(0xFF2EE6A6),
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 0.9),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              height: 1.2,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _features(List<String> features, {required bool isGold}) {
+    return Column(
+      children: features.map((feature) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: isGold
+                      ? const Color.fromRGBO(255, 180, 50, 0.15)
+                      : const Color.fromRGBO(46, 230, 166, 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isGold
+                        ? const Color.fromRGBO(255, 180, 50, 0.25)
+                        : const Color.fromRGBO(46, 230, 166, 0.2),
+                  ),
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 12,
+                  color: isGold ? const Color(0xFFFFB832) : const Color(0xFF2EE6A6),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  feature,
+                  style: const TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 0.75),
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _supportingLine() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 16),
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Color.fromRGBO(255, 255, 255, 0.06),
+          ),
+        ),
+      ),
+      child: const Text(
+        'Turn walking into a habit that actually sticks — shared streaks make skipping harder.',
+        style: TextStyle(
+          color: Color.fromRGBO(255, 255, 255, 0.55),
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          height: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _billingToggle() {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(0, 0, 0, 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromRGBO(255, 255, 255, 0.08),
+        ),
+      ),
+      child: Row(
+        children: [
+          _billingTab('Monthly', 'monthly'),
+          _billingTab('Yearly', 'yearly', showSave: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _billingTab(
+    String label,
+    String value, {
+    bool showSave = false,
+  }) {
+    final selected = selectedBilling == value;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            selectedBilling = value;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            color: selected
+                ? const Color.fromRGBO(255, 255, 255, 0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected
+                      ? const Color.fromRGBO(255, 255, 255, 0.95)
+                      : const Color.fromRGBO(255, 255, 255, 0.5),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (showSave) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(46, 230, 166, 0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Text(
+                    'Save 33%',
+                    style: TextStyle(
+                      color: Color(0xFF2EE6A6),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _ctaButton(String text) {
+    return GestureDetector(
+      onTap: loading ? null : _goToDashboard,
+      child: Opacity(
+        opacity: loading ? 0.6 : 1,
+        child: Container(
+          width: double.infinity,
+          height: 48,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF2EE6A6),
+                Color(0xFF1EC896),
+              ],
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color.fromRGBO(46, 230, 166, 0.3),
+                blurRadius: 25,
+              ),
+              BoxShadow(
+                color: Color.fromRGBO(46, 230, 166, 0.15),
+                blurRadius: 50,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              loading ? 'Processing...' : text,
+              style: const TextStyle(
+                color: Color.fromRGBO(0, 0, 0, 0.85),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _topBadge(String text, {required bool isGold}) {
+    return Positioned(
+      top: -12,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            gradient: LinearGradient(
+              colors: isGold
+                  ? const [
+                      Color(0xFFFFB832),
+                      Color(0xFFFF9500),
+                    ]
+                  : const [
+                      Color(0xFF2EE6A6),
+                      Color(0xFF1EC896),
+                    ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isGold
+                    ? const Color.fromRGBO(255, 180, 50, 0.5)
+                    : const Color.fromRGBO(46, 230, 166, 0.4),
+                blurRadius: 15,
+              ),
+            ],
+          ),
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Color.fromRGBO(0, 0, 0, 0.85),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _reassuranceCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(255, 255, 255, 0.02),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color.fromRGBO(255, 255, 255, 0.05),
+          color: const Color.fromRGBO(255, 255, 255, 0.04),
         ),
       ),
-      child: const Center(
-        child: Text(
-          'Cancel anytime. No questions asked.',
-          style: TextStyle(
-            color: Color.fromRGBO(255, 255, 255, 0.5),
-            fontSize: 16,
-          ),
+      child: const Text(
+        'You can change your plan later.',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Color.fromRGBO(255, 255, 255, 0.5),
+          fontSize: 12,
         ),
       ),
     );
