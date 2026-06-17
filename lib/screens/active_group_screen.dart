@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'group_settings_screen.dart';
 
 class ActiveGroupScreen extends StatelessWidget {
   const ActiveGroupScreen({super.key});
@@ -104,11 +105,21 @@ class ActiveGroupScreen extends StatelessWidget {
             ],
           ),
         ),
-        const Icon(
-          Icons.settings_outlined,
-          color: Color.fromRGBO(255, 255, 255, 0.5),
-          size: 26,
-        ),
+        GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GroupSettingsScreen(),
+      ),
+    );
+  },
+  child: const Icon(
+    Icons.settings_outlined,
+    color: Color.fromRGBO(255, 255, 255, 0.5),
+    size: 26,
+  ),
+),
       ],
     );
   }
