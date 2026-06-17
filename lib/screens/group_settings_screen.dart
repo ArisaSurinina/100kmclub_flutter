@@ -29,7 +29,7 @@ class GroupSettingsScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _sectionTitle('GROUP IDENTITY'),
                 const SizedBox(height: 12),
-                _identityCard(),
+                _identityCard(context),
                 const SizedBox(height: 24),
                 _sectionTitle('RULES'),
                 const SizedBox(height: 12),
@@ -78,6 +78,172 @@ class GroupSettingsScreen extends StatelessWidget {
     );
   }
 
+void _showChangeGroupNameDialog(BuildContext context) {
+  final controller = TextEditingController(text: 'ARI');
+
+  showDialog(
+    context: context,
+    barrierColor: const Color.fromRGBO(0, 0, 0, 0.8),
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 512),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F0F10),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(dialogContext),
+                  child: const Icon(
+                    Icons.close,
+                    size: 24,
+                    color: Color.fromRGBO(255, 255, 255, 0.7),
+                  ),
+                ),
+              ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: Text(
+                      'Change group name',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  const Text(
+                    'Group name',
+                    style: TextStyle(
+                      color: Color.fromRGBO(255, 255, 255, 0.7),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: controller,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color.fromRGBO(255, 255, 255, 0.03),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(255, 255, 255, 0.08),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: Color.fromRGBO(46, 230, 166, 0.3),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: _modalGreenButton('Save'),
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(dialogContext),
+                    child: _modalCancelButton('Cancel'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _modalGreenButton(String text) {
+  return Container(
+    width: double.infinity,
+    height: 48,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Color.fromRGBO(46, 230, 166, 0.9),
+          Color.fromRGBO(30, 200, 140, 0.9),
+        ],
+      ),
+      boxShadow: const [
+        BoxShadow(
+          color: Color.fromRGBO(46, 230, 166, 0.25),
+          blurRadius: 25,
+        ),
+        BoxShadow(
+          color: Color.fromRGBO(46, 230, 166, 0.15),
+          blurRadius: 50,
+        ),
+      ],
+    ),
+    child: Center(
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Color.fromRGBO(0, 0, 0, 0.85),
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _modalCancelButton(String text) {
+  return Container(
+    width: double.infinity,
+    height: 48,
+    decoration: BoxDecoration(
+      color: const Color.fromRGBO(255, 255, 255, 0.05),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: const Color.fromRGBO(255, 255, 255, 0.1),
+      ),
+    ),
+    child: Center(
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+  );
+}
+
   Widget _sectionTitle(
     String text, {
     Color color = const Color.fromRGBO(255, 255, 255, 0.4),
@@ -96,30 +262,33 @@ class GroupSettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _identityCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: _outerCardDecoration(),
-      child: Column(
-        children: [
-          _settingsRow(
-            icon: Icons.photo_camera_outlined,
-            text: 'Change group photo',
-          ),
-          const SizedBox(height: 16),
-          _photoPreview(),
-          const SizedBox(height: 12),
-          _removePhotoButton(),
-          const SizedBox(height: 16),
-          _settingsRow(
-            icon: Icons.edit_outlined,
-            text: 'Change group name',
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _identityCard(BuildContext context) {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(20),
+    decoration: _outerCardDecoration(),
+    child: Column(
+      children: [
+        _settingsRow(
+          icon: Icons.photo_camera_outlined,
+          text: 'Change group photo',
+        ),
+        const SizedBox(height: 16),
+        _photoPreview(),
+        const SizedBox(height: 12),
+        _removePhotoButton(),
+        const SizedBox(height: 16),
+        _settingsRow(
+          icon: Icons.edit_outlined,
+          text: 'Change group name',
+          onTap: () {
+            _showChangeGroupNameDialog(context);
+          },
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _rulesCard() {
     return Container(
@@ -170,10 +339,14 @@ class GroupSettingsScreen extends StatelessWidget {
   }
 
   Widget _settingsRow({
-    required IconData icon,
-    required String text,
-  }) {
-    return Container(
+  required IconData icon,
+  required String text,
+  VoidCallback? onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(12),
+    child: Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -207,8 +380,9 @@ class GroupSettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _photoPreview() {
     return Container(
