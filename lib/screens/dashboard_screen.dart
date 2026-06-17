@@ -11,130 +11,134 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   void _showCreateGroupDialog() {
-    showDialog(
-      context: context,
-      barrierColor: const Color.fromRGBO(0, 0, 0, 0.8),
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 0),
-          child: Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(maxWidth: 512),
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F0F10),
-              border: Border.all(
-                color: const Color.fromRGBO(255, 255, 255, 0.1),
-              ),
+  showDialog(
+    context: context,
+    barrierColor: const Color.fromRGBO(0, 0, 0, 0.8),
+    builder: (dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(
+            maxWidth: 512,
+            maxHeight: 620,
+          ),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F0F10),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 255, 255, 0.1),
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(dialogContext);
-                    },
-                    child: const Icon(
-                      Icons.close,
-                      size: 24,
-                      color: Color.fromRGBO(255, 255, 255, 0.7),
-                    ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: Color.fromRGBO(255, 255, 255, 0.7),
                   ),
                 ),
-                Column(
+              ),
+              Form(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 32),
                     const Center(
                       child: Text(
                         'Create Group',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Group Name',
-                          style: TextStyle(
-                            color: Color(0xFFA1A1AA),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
+                    const Text(
+                      'Group Name',
+                      style: TextStyle(
+                        color: Color(0xFFA1A1AA),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    TextField(
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                      decoration: _inputDecoration('Morning Walkers'),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(46, 230, 166, 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: const Color.fromRGBO(46, 230, 166, 0.15),
                         ),
-                        const SizedBox(height: 4),
-                        TextField(
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                          decoration: _inputDecoration('Morning Walkers'),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(46, 230, 166, 0.08),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: const Color.fromRGBO(46, 230, 166, 0.15),
+                      ),
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 2),
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              size: 14,
+                              color: Color(0xFF2EE6A6),
                             ),
                           ),
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                size: 14,
-                                color: Color(0xFF2EE6A6),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Groups are commitment contracts. Once locked, all members share responsibility for the streak.',
+                              style: TextStyle(
+                                color: Color.fromRGBO(255, 255, 255, 0.6),
+                                fontSize: 12,
+                                height: 1.35,
                               ),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Groups are commitment contracts. Once locked, all members share responsibility for the streak.',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(255, 255, 255, 0.6),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(dialogContext);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const FormingGroupScreen(),
-                              ),
-                            );
-                          },
-                          child: _greenButton('Create Group'),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(dialogContext);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const FormingGroupScreen(),
+                          ),
+                        );
+                      },
+                      child: _greenButton('Create Group'),
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   static InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
@@ -228,7 +232,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 24),
                 const Center(
                   child: ProgressRing(
-                    current: 100.0,
+                    current: 24.0,
                     target: 100.0,
                   ),
                 ),
