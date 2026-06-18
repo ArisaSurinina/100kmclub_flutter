@@ -1,6 +1,8 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'forming_group_screen.dart';
+import 'debug_panel_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -10,6 +12,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  double _debugCurrentKm = 24.0;
   void _showCreateGroupDialog() {
   showDialog(
     context: context,
@@ -230,12 +233,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 20),
                 _divider(),
                 const SizedBox(height: 24),
-                const Center(
-                  child: ProgressRing(
-                    current: 24.0,
-                    target: 100.0,
-                  ),
-                ),
+                Center(
+  child: ProgressRing(
+    current: _debugCurrentKm,
+    target: 100.0,
+  ),
+),
                 const SizedBox(height: 32),
                 _actionButtons(),
                 const SizedBox(height: 32),
@@ -286,21 +289,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         Row(
-          children: [
-            _pointsPill(),
-            const SizedBox(width: 8),
-            _streakPill(),
-            const SizedBox(width: 8),
-            GestureDetector(
-  onTap: () {
-    Navigator.popUntil(context, (route) => route.isFirst);
-  },
-  child: const Icon(
-    Icons.logout,
-    size: 16,
-    color: Color.fromRGBO(255, 255, 255, 0.25),
-  ),
-),
+  children: [
+    _pointsPill(),
+    const SizedBox(width: 8),
+    _streakPill(),
+    if (kDebugMode) ...[
+      const SizedBox(width: 8),
+      GestureDetector(
+        onTap: () async {
+  final debugKm = await Navigator.push<double>(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const DebugPanelScreen(),
+    ),
+  );
+
+  if (debugKm != null) {
+  setState(() {
+    _debugCurrentKm = debugKm;
+  });
+}
+},
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(255, 107, 107, 0.1),
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: const Color.fromRGBO(255, 107, 107, 0.5),
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: const Icon(
+            Icons.bug_report_outlined,
+            size: 16,
+            color: Color(0xFFFF6B6B),
+          ),
+        ),
+      ),
+    ],
+    const SizedBox(width: 8),
+    GestureDetector(
+      onTap: () {
+        Navigator.popUntil(context, (route) => route.isFirst);
+      },
+      child: const Icon(
+        Icons.logout,
+        size: 16,
+        color: Color.fromRGBO(255, 255, 255, 0.25),
+              ),
+            ),
           ],
         ),
       ],

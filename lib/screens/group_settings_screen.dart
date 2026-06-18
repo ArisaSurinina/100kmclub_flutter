@@ -121,7 +121,7 @@ void _showChangeGroupNameDialog(BuildContext context) {
                       'Change group name',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
