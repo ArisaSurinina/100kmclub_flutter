@@ -515,34 +515,41 @@ double _debugCurrentKm = 24.0;
   }
 
   Widget _statsRow() {
-    return const Row(
-      children: [
-        Expanded(
-          child: StatCard(
-            value: '95.0',
-            label: 'km left',
-            color: Color.fromRGBO(115, 180, 255, 1),
-          ),
+  final now = DateTime.now();
+  final lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+  final daysLeft = lastDayOfMonth.day - now.day + 1;
+
+  final kmLeft = math.max(0.0, 100.0 - _debugCurrentKm);
+  final kmPerDay = daysLeft > 0 ? kmLeft / daysLeft : 0.0;
+
+  return Row(
+    children: [
+      Expanded(
+        child: StatCard(
+          value: kmLeft.toStringAsFixed(1),
+          label: 'km left',
+          color: const Color.fromRGBO(115, 180, 255, 1),
         ),
-        SizedBox(width: 12),
-        Expanded(
-          child: StatCard(
-            value: '15',
-            label: 'days left',
-            color: Color.fromRGBO(110, 175, 250, 1),
-          ),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: StatCard(
+          value: '$daysLeft',
+          label: 'days left',
+          color: const Color.fromRGBO(110, 175, 250, 1),
         ),
-        SizedBox(width: 12),
-        Expanded(
-          child: StatCard(
-            value: '6.3',
-            label: 'km/day',
-            color: Color.fromRGBO(105, 170, 248, 1),
-          ),
+      ),
+      const SizedBox(width: 12),
+      Expanded(
+        child: StatCard(
+          value: kmPerDay.toStringAsFixed(1),
+          label: 'km/day',
+          color: const Color.fromRGBO(105, 170, 248, 1),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget _groupsSection() {
     return Column(
