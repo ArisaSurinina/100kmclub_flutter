@@ -12,7 +12,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  double _debugCurrentKm = 24.0;
+  final List<DebugWalk> _debugWalks = [];
+double _debugCurrentKm = 24.0;
   void _showCreateGroupDialog() {
   showDialog(
     context: context,
@@ -297,18 +298,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
       const SizedBox(width: 8),
       GestureDetector(
         onTap: () async {
-  final debugKm = await Navigator.push<double>(
+  final debugWalks = await Navigator.push<List<DebugWalk>>(
     context,
     MaterialPageRoute(
-      builder: (context) => const DebugPanelScreen(),
+      builder: (context) => DebugPanelScreen(
+  initialWalks: _debugWalks,
+),
     ),
   );
 
-  if (debugKm != null) {
-  setState(() {
-    _debugCurrentKm = debugKm;
-  });
-}
+  if (debugWalks != null) {
+    setState(() {
+      _debugWalks
+        ..clear()
+        ..addAll(debugWalks);
+
+      _debugCurrentKm = _debugWalks.fold(
+        0,
+        (sum, walk) => sum + walk.distanceKm,
+      );
+    });
+  }
 },
         child: Container(
           padding: const EdgeInsets.all(8),

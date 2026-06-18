@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DebugPanelScreen extends StatefulWidget {
-  const DebugPanelScreen({super.key});
+  final List<DebugWalk> initialWalks;
+
+  const DebugPanelScreen({
+    super.key,
+    this.initialWalks = const [],
+  });
 
   @override
   State<DebugPanelScreen> createState() => _DebugPanelScreenState();
@@ -10,11 +15,14 @@ class DebugPanelScreen extends StatefulWidget {
 class _DebugPanelScreenState extends State<DebugPanelScreen> {
   final TextEditingController _distanceController =
       TextEditingController(text: '5.0');
+
   final TextEditingController _durationController =
       TextEditingController(text: '60');
-  final TextEditingController _dateController = TextEditingController();
 
-  final List<_DebugWalk> _walks = [];
+  final TextEditingController _dateController =
+      TextEditingController();
+
+  late final List<DebugWalk> _walks;
 
   String get _timezone => DateTime.now().timeZoneName;
 
@@ -30,6 +38,12 @@ class _DebugPanelScreenState extends State<DebugPanelScreen> {
   bool get _goalCompleted => _totalKm >= 100;
 
   @override
+  void initState() {
+    super.initState();
+    _walks = List<DebugWalk>.from(widget.initialWalks);
+  }
+
+  @override
   void dispose() {
     _distanceController.dispose();
     _durationController.dispose();
@@ -38,11 +52,17 @@ class _DebugPanelScreenState extends State<DebugPanelScreen> {
   }
 
   void _addDebugWalk() {
-    final distanceText = _distanceController.text.replaceAll(',', '.');
-    final durationText = _durationController.text;
+    final distanceText =
+        _distanceController.text.replaceAll(',', '.');
 
-    final distance = double.tryParse(distanceText);
-    final duration = int.tryParse(durationText);
+    final durationText =
+        _durationController.text;
+
+    final distance =
+        double.tryParse(distanceText);
+
+    final duration =
+        int.tryParse(durationText);
 
     if (distance == null || distance <= 0) {
       return;
@@ -57,12 +77,15 @@ class _DebugPanelScreenState extends State<DebugPanelScreen> {
     setState(() {
       _walks.insert(
         0,
-        _DebugWalk(
+        DebugWalk(
           distanceKm: distance,
           durationMinutes: duration,
           date: _dateController.text.trim().isEmpty
               ? now
-              : DateTime.tryParse(_dateController.text.trim()) ?? now,
+              : DateTime.tryParse(
+                      _dateController.text.trim(),
+                    ) ??
+                  now,
         ),
       );
     });
@@ -117,7 +140,7 @@ class _DebugPanelScreenState extends State<DebugPanelScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context, _totalKm),
+            onTap: () => Navigator.pop(context, _walks),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
@@ -599,12 +622,12 @@ class _DebugPanelScreenState extends State<DebugPanelScreen> {
   }
 }
 
-class _DebugWalk {
+class DebugWalk {
   final double distanceKm;
   final int durationMinutes;
   final DateTime date;
 
-  const _DebugWalk({
+  const DebugWalk({
     required this.distanceKm,
     required this.durationMinutes,
     required this.date,
