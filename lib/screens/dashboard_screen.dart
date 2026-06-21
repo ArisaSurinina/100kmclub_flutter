@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'setup_screen.dart';
 import 'forming_group_screen.dart';
 import 'debug_panel_screen.dart';
 
@@ -339,16 +340,36 @@ double _debugCurrentKm = 24.0;
       ),
     ],
     const SizedBox(width: 8),
-    GestureDetector(
-      onTap: () {
-        Navigator.popUntil(context, (route) => route.isFirst);
-      },
-      child: const Icon(
-        Icons.logout,
-        size: 16,
-        color: Color.fromRGBO(255, 255, 255, 0.25),
-              ),
-            ),
+GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SetupScreen(
+          name: 'Arisa Surinina',
+          email: 'arisa@surinina.com',
+          personalGoalKm: 100,
+          protectionsLeftYear: 2,
+          onBack: () => Navigator.pop(context),
+          onOpenAccountSettings: () {},
+          onViewRules: () {},
+          onChangeGoal: () {},
+          onActivateProtection: () {},
+          onOpenPoints: () {},
+          onOpenSubscription: () {},
+          onLogout: () {
+            Navigator.popUntil(context, (route) => route.isFirst);
+          },
+        ),
+      ),
+    );
+  },
+  child: const Icon(
+    Icons.logout,
+    size: 16,
+    color: Color.fromRGBO(255, 255, 255, 0.25),
+  ),
+),
           ],
         ),
       ],
