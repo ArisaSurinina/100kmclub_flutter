@@ -1,5 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 import '../services/api_client.dart';
+import '../services/auth_storage.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   final String name;
@@ -20,6 +27,9 @@ class AccountSettingsScreen extends StatefulWidget {
 class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isEditingName = false;
   bool _isEditingPassword = false;
+  bool _isUploadingAvatar = false;
+  String? _avatarUrl;
+  int _avatarCacheKey = 0;
 
   late final TextEditingController _nameController;
   final TextEditingController _currentPasswordController =
@@ -33,6 +43,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 void initState() {
   super.initState();
   _nameController = TextEditingController(text: widget.name);
+  _avatarUrl = widget.avatarUrl;
 }
 
   @override
@@ -132,20 +143,103 @@ void initState() {
   }
 
   String? _fullAvatarUrl() {
-  final avatarUrl = widget.avatarUrl;
+  final avatarUrl = _avatarUrl;
 
   if (avatarUrl == null || avatarUrl.isEmpty) {
     return null;
   }
 
+  final separator = avatarUrl.contains('?') ? '&' : '?';
+
   if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
-    return avatarUrl;
+    return '$avatarUrl${separator}v=$_avatarCacheKey';
   }
 
-  return '${ApiClient.backendBaseUrl}$avatarUrl';
+  return '${ApiClient.backendBaseUrl}$avatarUrl${separator}v=$_avatarCacheKey';
 }
 
-  Widget _avatarSection() {
+Future<void> _pickAndUploadAvatar() async {
+  if (_isUploadingAvatar) return;
+
+  final picker = ImagePicker();
+
+  final file = await picker.pickImage(
+    source: ImageSource.gallery,
+    imageQuality: 90,
+  );
+
+  if (file == null) return;
+
+  final token = await AuthStorage.readToken();
+
+  if (token == null) {
+    debugPrint('AVATAR UPLOAD FAILED: no auth token');
+    return;
+  }
+
+  setState(() {
+    _isUploadingAvatar = true;
+  });
+
+  try {
+    final request = http.MultipartRequest(
+      'POST',
+      ApiClient.uri('/users/me/avatar'),
+    );
+
+    request.headers['Authorization'] = 'Bearer $token';
+
+    request.files.add(
+  await http.MultipartFile.fromPath(
+    'file',
+    file.path,
+    contentType: MediaType('image', 'jpeg'),
+  ),
+);
+
+    final streamedResponse = await request.send();
+    final responseBody = await streamedResponse.stream.bytesToString();
+
+    dynamic body;
+    try {
+      body = jsonDecode(responseBody);
+    } catch (_) {
+      throw Exception(
+        'Server returned ${streamedResponse.statusCode}: $responseBody',
+      );
+    }
+
+    if (streamedResponse.statusCode == 200 &&
+        body is Map &&
+        body['avatar_url'] is String) {
+      final newAvatarUrl = body['avatar_url'] as String;
+
+      setState(() {
+         _avatarUrl = newAvatarUrl;
+         _avatarCacheKey++;
+    });
+
+      debugPrint('AVATAR UPLOAD SUCCESS: $newAvatarUrl');
+      return;
+    }
+
+    if (body is Map && body['detail'] is String) {
+      throw Exception(body['detail']);
+    }
+
+    throw Exception('Failed to upload avatar.');
+  } catch (error) {
+    debugPrint('AVATAR UPLOAD ERROR: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isUploadingAvatar = false;
+      });
+    }
+  }
+}
+
+Widget _avatarSection() {
     return Center(
       child: Column(
         children: [
@@ -205,14 +299,17 @@ void initState() {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Change photo',
-            style: TextStyle(
-              color: Color(0xFF00FF94),
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+          GestureDetector(
+  onTap: _isUploadingAvatar ? null : _pickAndUploadAvatar,
+  child: Text(
+  _isUploadingAvatar ? 'Uploading...' : 'Change photo',
+  style: const TextStyle(
+    color: Color(0xFF00FF94),
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  ),
+),
+),
         ],
       ),
     );
