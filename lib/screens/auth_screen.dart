@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'subscription_screen.dart';
+import '../services/auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -45,6 +46,34 @@ class _AuthScreenState extends State<AuthScreen> {
       );
     });
   }
+
+  Future<void> _handleLogin() async {
+  setState(() {
+    loading = true;
+  });
+
+  try {
+    await AuthService.login(
+      email: emailController.text,
+      password: passwordController.text,
+      timezone: DateTime.now().timeZoneName,
+    );
+
+    debugPrint('LOGIN SUCCESS');
+
+    _continueToSubscription();
+  } on AuthException catch (error) {
+    debugPrint('LOGIN FAILED: ${error.message}');
+  } catch (error) {
+    debugPrint('LOGIN ERROR: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -426,7 +455,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Widget _primaryButton(String text) {
     return GestureDetector(
-      onTap: loading ? null : _continueToSubscription,
+      onTap: loading ? null : _handleLogin,
       child: Opacity(
         opacity: loading ? 0.5 : 1,
         child: Container(
