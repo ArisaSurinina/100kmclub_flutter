@@ -7,6 +7,9 @@ import 'account_settings_screen.dart';
 import 'forming_group_screen.dart';
 import 'debug_panel_screen.dart';
 
+import '../services/auth_storage.dart';
+import 'auth_screen.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -369,9 +372,19 @@ GestureDetector(
           onActivateProtection: () {},
           onOpenPoints: () {},
           onOpenSubscription: () {},
-          onLogout: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
-          },
+          onLogout: () async {
+  await AuthStorage.clearAuth();
+
+  if (!context.mounted) return;
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const AuthScreen(),
+    ),
+    (route) => false,
+  );
+},
         ),
       ),
     );
