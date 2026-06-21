@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'subscription_screen.dart';
 import '../services/auth_service.dart';
+import '../services/auth_storage.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -64,8 +65,18 @@ final user = await AuthService.getCurrentUser(
   timezone: DateTime.now().timeZoneName,
 );
 
+await AuthStorage.saveAuth(
+  token: token,
+  user: user,
+);
+
+final savedToken = await AuthStorage.readToken();
+final savedUser = await AuthStorage.readUser();
+
 debugPrint('LOGIN SUCCESS');
-debugPrint('CURRENT USER: ${user['email']}');
+debugPrint('CURRENT USER SAVED: ${user['email']}');
+debugPrint('SAVED TOKEN EXISTS: ${savedToken != null}');
+debugPrint('SAVED USER EMAIL: ${savedUser?['email']}');
 
 _continueToSubscription();
   } on AuthException catch (error) {
