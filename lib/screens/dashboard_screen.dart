@@ -357,7 +357,10 @@ GestureDetector(
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => const AccountSettingsScreen(),
+      builder: (context) => const AccountSettingsScreen(
+  name: 'Arisa Surinina',
+  email: 'arisa@surinina.com',
+),
     ),
   );
 },

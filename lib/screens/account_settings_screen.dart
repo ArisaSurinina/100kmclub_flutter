@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
-  const AccountSettingsScreen({super.key});
+  final String name;
+  final String email;
+
+  const AccountSettingsScreen({
+    super.key,
+    required this.name,
+    required this.email,
+  });
 
   @override
   State<AccountSettingsScreen> createState() => _AccountSettingsScreenState();
@@ -11,14 +18,19 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isEditingName = false;
   bool _isEditingPassword = false;
 
-  final TextEditingController _nameController =
-      TextEditingController(text: 'Arisa');
+  late final TextEditingController _nameController;
   final TextEditingController _currentPasswordController =
       TextEditingController();
   final TextEditingController _newPasswordController =
       TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+      @override
+void initState() {
+  super.initState();
+  _nameController = TextEditingController(text: widget.name);
+}
 
   @override
   void dispose() {
@@ -32,7 +44,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   void _cancelNameEdit() {
     setState(() {
       _isEditingName = false;
-      _nameController.text = 'Arisa';
+      _nameController.text = widget.name;
     });
   }
 
@@ -130,9 +142,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   shape: BoxShape.circle,
                   color: Color(0xFF00FF94),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'A',
+  widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 36,
@@ -231,7 +243,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          const Expanded(
+           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -244,7 +256,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 ),
                 SizedBox(height: 2),
                 Text(
-                  'Arisa',
+  widget.name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
