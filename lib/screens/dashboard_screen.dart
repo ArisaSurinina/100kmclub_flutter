@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import 'setup_screen.dart';
+import 'account_settings_screen.dart';
 import 'forming_group_screen.dart';
 import 'debug_panel_screen.dart';
 
@@ -351,7 +353,14 @@ GestureDetector(
           personalGoalKm: 100,
           protectionsLeftYear: 2,
           onBack: () => Navigator.pop(context),
-          onOpenAccountSettings: () {},
+          onOpenAccountSettings: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const AccountSettingsScreen(),
+    ),
+  );
+},
           onViewRules: () {},
           onChangeGoal: () {},
           onActivateProtection: () {},
