@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/auth_storage.dart';
 import 'subscription_screen.dart';
-import 'welcome_screen.dart';
+import 'auth_screen.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -31,7 +31,7 @@ if (!mounted) return;
 
 if (token == null) {
   debugPrint('AUTH GATE: NO TOKEN, GOING TO WELCOME');
-  _goToWelcome();
+  _goToAuth();
   return;
 }
 
@@ -52,21 +52,21 @@ if (token == null) {
     } on AuthException catch (error) {
       debugPrint('SESSION RESTORE FAILED: ${error.message}');
       await AuthStorage.clearAuth();
-      _goToWelcome();
+      _goToAuth();
     } catch (error) {
       debugPrint('SESSION RESTORE ERROR: $error');
-      _goToWelcome();
+      _goToAuth();
     }
   }
 
-  void _goToWelcome() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const WelcomeScreen(),
-      ),
-    );
-  }
+  void _goToAuth() {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const AuthScreen(),
+    ),
+  );
+}
 
   void _goToSubscription() {
     Navigator.pushReplacement(
