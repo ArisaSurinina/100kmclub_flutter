@@ -53,15 +53,21 @@ class _AuthScreenState extends State<AuthScreen> {
   });
 
   try {
-    await AuthService.login(
-      email: emailController.text,
-      password: passwordController.text,
-      timezone: DateTime.now().timeZoneName,
-    );
+    final token = await AuthService.login(
+  email: emailController.text,
+  password: passwordController.text,
+  timezone: DateTime.now().timeZoneName,
+);
 
-    debugPrint('LOGIN SUCCESS');
+final user = await AuthService.getCurrentUser(
+  token: token,
+  timezone: DateTime.now().timeZoneName,
+);
 
-    _continueToSubscription();
+debugPrint('LOGIN SUCCESS');
+debugPrint('CURRENT USER: ${user['email']}');
+
+_continueToSubscription();
   } on AuthException catch (error) {
     debugPrint('LOGIN FAILED: ${error.message}');
   } catch (error) {
