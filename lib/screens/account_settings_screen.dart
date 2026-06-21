@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class AccountSettingsScreen extends StatefulWidget {
   final String name;
   final String email;
+  final String? avatarUrl;
 
   const AccountSettingsScreen({
     super.key,
     required this.name,
     required this.email,
+    this.avatarUrl,
   });
 
   @override
@@ -142,17 +144,29 @@ void initState() {
                   shape: BoxShape.circle,
                   color: Color(0xFF00FF94),
                 ),
-                child: Center(
-                  child: Text(
-  widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
+                child: ClipOval(
+  child: widget.avatarUrl != null &&
+          widget.avatarUrl!.isNotEmpty
+      ? Image.network(
+          widget.avatarUrl!,
+          width: 96,
+          height: 96,
+          fit: BoxFit.cover,
+        )
+      : Center(
+          child: Text(
+            widget.name.isNotEmpty
+                ? widget.name[0].toUpperCase()
+                : '?',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 36,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    ),
               Positioned(
                 right: -4,
                 bottom: -4,

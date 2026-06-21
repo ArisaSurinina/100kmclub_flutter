@@ -34,9 +34,11 @@ double _debugCurrentKm = 24.0;
 
     if (!mounted) return;
 
-    setState(() {
-      _user = user;
-    });
+    debugPrint('DASHBOARD USER AVATAR URL: ${user?['avatar_url']}');
+
+setState(() {
+  _user = user;
+});
   }
   
   void _showCreateGroupDialog() {
@@ -382,6 +384,7 @@ GestureDetector(
       builder: (context) => AccountSettingsScreen(
         name: (_user?['name'] as String?) ?? 'User',
         email: (_user?['email'] as String?) ?? '',
+        avatarUrl: _user?['avatar_url'] as String?,
       ),
     ),
   );
