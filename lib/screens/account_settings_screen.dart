@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_client.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
   final String name;
@@ -130,6 +131,20 @@ void initState() {
     );
   }
 
+  String? _fullAvatarUrl() {
+  final avatarUrl = widget.avatarUrl;
+
+  if (avatarUrl == null || avatarUrl.isEmpty) {
+    return null;
+  }
+
+  if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+    return avatarUrl;
+  }
+
+  return '${ApiClient.backendBaseUrl}$avatarUrl';
+}
+
   Widget _avatarSection() {
     return Center(
       child: Column(
@@ -145,10 +160,9 @@ void initState() {
                   color: Color(0xFF00FF94),
                 ),
                 child: ClipOval(
-  child: widget.avatarUrl != null &&
-          widget.avatarUrl!.isNotEmpty
-      ? Image.network(
-          widget.avatarUrl!,
+  child: _fullAvatarUrl() != null
+    ? Image.network(
+        _fullAvatarUrl()!,
           width: 96,
           height: 96,
           fit: BoxFit.cover,
