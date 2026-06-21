@@ -28,31 +28,40 @@ class AuthService {
       }),
     );
 
-    dynamic body;
+    return _tokenFromResponse(
+      response: response,
+      fallbackMessage: 'Login failed. Please try again.',
+    );
+  }
 
-    try {
-      body = jsonDecode(response.body);
-    } catch (_) {
-      throw AuthException(
-        'Server returned ${response.statusCode}: ${response.body}',
-      );
-    }
+  static Future<String> register({
+    required String email,
+    required String password,
+    String? name,
+    String? timezone,
+  }) async {
+    debugPrint('AUTH SERVICE REGISTER METHOD STARTED');
 
-    if (response.statusCode == 200) {
-      final token = body['access_token'];
+    final registerUrl = ApiClient.uri('/auth/register');
+    debugPrint('REGISTER URL: $registerUrl');
 
-      if (token is String && token.isNotEmpty) {
-        return token;
-      }
+    final response = await http.post(
+      registerUrl,
+      headers: const {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email.trim(),
+        'password': password,
+        if (name != null && name.trim().isNotEmpty) 'name': name.trim(),
+        if (timezone != null) 'timezone': timezone,
+      }),
+    );
 
-      throw AuthException('Login succeeded but token was missing.');
-    }
-
-    if (body is Map && body['detail'] is String) {
-      throw AuthException(body['detail'] as String);
-    }
-
-    throw AuthException('Login failed. Please try again.');
+    return _tokenFromResponse(
+      response: response,
+      fallbackMessage: 'Registration failed. Please try again.',
+    );
   }
 
   static Future<Map<String, dynamic>> getCurrentUser({
@@ -93,6 +102,37 @@ class AuthService {
     }
 
     throw AuthException('Failed to load current user.');
+  }
+
+  static String _tokenFromResponse({
+    required http.Response response,
+    required String fallbackMessage,
+  }) {
+    dynamic body;
+
+    try {
+      body = jsonDecode(response.body);
+    } catch (_) {
+      throw AuthException(
+        'Server returned ${response.statusCode}: ${response.body}',
+      );
+    }
+
+    if (response.statusCode == 200) {
+      final token = body['access_token'];
+
+      if (token is String && token.isNotEmpty) {
+        return token;
+      }
+
+      throw AuthException('Request succeeded but token was missing.');
+    }
+
+    if (body is Map && body['detail'] is String) {
+      throw AuthException(body['detail'] as String);
+    }
+
+    throw AuthException(fallbackMessage);
   }
 }
 

@@ -92,6 +92,51 @@ _continueToSubscription();
   }
 }
 
+Future<void> _handleRegister() async {
+  if (passwordController.text != confirmPasswordController.text) {
+    debugPrint('REGISTER FAILED: Passwords do not match');
+    return;
+  }
+
+  setState(() {
+    loading = true;
+  });
+
+  try {
+    final token = await AuthService.register(
+      email: emailController.text,
+      password: passwordController.text,
+      name: nameController.text,
+      timezone: DateTime.now().timeZoneName,
+    );
+
+    final user = await AuthService.getCurrentUser(
+      token: token,
+      timezone: DateTime.now().timeZoneName,
+    );
+
+    await AuthStorage.saveAuth(
+      token: token,
+      user: user,
+    );
+
+    debugPrint('REGISTER SUCCESS');
+    debugPrint('CURRENT USER SAVED: ${user['email']}');
+
+    _continueToSubscription();
+  } on AuthException catch (error) {
+    debugPrint('REGISTER FAILED: ${error.message}');
+  } catch (error) {
+    debugPrint('REGISTER ERROR: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -472,7 +517,11 @@ _continueToSubscription();
 
   Widget _primaryButton(String text) {
     return GestureDetector(
-      onTap: loading ? null : _handleLogin,
+      onTap: loading
+    ? null
+    : isLogin
+        ? _handleLogin
+        : _handleRegister,
       child: Opacity(
         opacity: loading ? 0.5 : 1,
         child: Container(

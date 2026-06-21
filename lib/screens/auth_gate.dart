@@ -20,9 +20,10 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _restoreSession() async {
-    debugPrint('AUTH GATE STARTED');
 
-final token = await AuthStorage.readToken();
+  debugPrint('AUTH GATE STARTED');
+
+  final token = await AuthStorage.readToken();
 
 debugPrint('AUTH GATE TOKEN EXISTS: ${token != null}');
 
