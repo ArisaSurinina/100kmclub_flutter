@@ -247,21 +247,21 @@ void initState() {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Display Name',
                   style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 0.4),
                     fontSize: 12,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
   widget.name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                ),
+  style: const TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+  ),
+),
               ],
             ),
           ),
