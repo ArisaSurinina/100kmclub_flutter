@@ -20,6 +20,25 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final List<DebugWalk> _debugWalks = [];
 double _debugCurrentKm = 24.0;
+
+  Map<String, dynamic>? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthStorage.readUser();
+
+    if (!mounted) return;
+
+    setState(() {
+      _user = user;
+    });
+  }
+  
   void _showCreateGroupDialog() {
   showDialog(
     context: context,
@@ -351,8 +370,8 @@ GestureDetector(
       context,
       MaterialPageRoute(
         builder: (context) => SetupScreen(
-          name: 'Arisa Surinina',
-          email: 'arisa@surinina.com',
+  name: (_user?['name'] as String?) ?? 'User',
+  email: (_user?['email'] as String?) ?? '',
           personalGoalKm: 100,
           protectionsLeftYear: 2,
           onBack: () => Navigator.pop(context),
@@ -360,10 +379,10 @@ GestureDetector(
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => const AccountSettingsScreen(
-  name: 'Arisa Surinina',
-  email: 'arisa@surinina.com',
-),
+      builder: (context) => AccountSettingsScreen(
+        name: (_user?['name'] as String?) ?? 'User',
+        email: (_user?['email'] as String?) ?? '',
+      ),
     ),
   );
 },
