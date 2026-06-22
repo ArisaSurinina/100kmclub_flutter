@@ -30,6 +30,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isUploadingAvatar = false;
   String? _avatarUrl;
   int _avatarCacheKey = 0;
+  bool _isSavingName = false;
+  String _displayName = '';
 
   late final TextEditingController _nameController;
   final TextEditingController _currentPasswordController =
@@ -42,6 +44,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       @override
 void initState() {
   super.initState();
+  _displayName = widget.name;
   _nameController = TextEditingController(text: widget.name);
   _avatarUrl = widget.avatarUrl;
 }
@@ -239,6 +242,65 @@ Future<void> _pickAndUploadAvatar() async {
   }
 }
 
+Future<void> _saveDisplayName() async {
+  if (_isSavingName) return;
+
+  final newName = _nameController.text.trim();
+
+  if (newName.isEmpty) {
+    debugPrint('NAME SAVE FAILED: empty name');
+    return;
+  }
+
+  final token = await AuthStorage.readToken();
+
+  if (token == null) {
+    debugPrint('NAME SAVE FAILED: no auth token');
+    return;
+  }
+
+  setState(() {
+    _isSavingName = true;
+  });
+
+  try {
+    final response = await http.patch(
+      ApiClient.uri('/users/me/name'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': newName,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200 &&
+        body is Map &&
+        body['name'] is String) {
+      setState(() {
+        _displayName = body['name'] as String;
+        _isEditingName = false;
+      });
+
+      debugPrint('NAME SAVE SUCCESS: ${body['name']}');
+      return;
+    }
+
+    throw Exception(body.toString());
+  } catch (error) {
+    debugPrint('NAME SAVE ERROR: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isSavingName = false;
+      });
+    }
+  }
+}
+
 Widget _avatarSection() {
     return Center(
       child: Column(
@@ -354,7 +416,10 @@ Widget _avatarSection() {
             const SizedBox(height: 12),
             Row(
               children: [
-                _smallPrimaryButton('Save'),
+                _smallPrimaryButton(
+  _isSavingName ? '...' : 'Save',
+  _saveDisplayName,
+),
                 const SizedBox(width: 8),
                 _smallGhostButton('Cancel', _cancelNameEdit),
               ],
@@ -381,7 +446,7 @@ Widget _avatarSection() {
                 ),
                 const SizedBox(height: 2),
                 Text(
-  widget.name,
+  _displayName,
   style: const TextStyle(
     color: Colors.white,
     fontSize: 14,
@@ -434,7 +499,12 @@ Widget _avatarSection() {
             const SizedBox(height: 12),
             Row(
               children: [
-                _smallPrimaryButton('Update'),
+                _smallPrimaryButton(
+  'Update',
+  () {
+    debugPrint('UPDATE PASSWORD PRESSED');
+  },
+),
                 const SizedBox(width: 8),
                 _smallGhostButton('Cancel', _cancelPasswordEdit),
               ],
@@ -593,8 +663,13 @@ Widget _avatarSection() {
     );
   }
 
-  Widget _smallPrimaryButton(String text) {
-    return Container(
+  Widget _smallPrimaryButton(
+  String text,
+  VoidCallback onTap,
+) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       height: 36,
       decoration: BoxDecoration(
@@ -622,8 +697,9 @@ Widget _avatarSection() {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _smallGhostButton(String text, VoidCallback onTap) {
     return GestureDetector(
