@@ -28,6 +28,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isEditingName = false;
   bool _isEditingPassword = false;
   bool _isUploadingAvatar = false;
+  bool _isUpdatingPassword = false;
   String? _avatarUrl;
   int _avatarCacheKey = 0;
   bool _isSavingName = false;
@@ -314,6 +315,78 @@ return;
   }
 }
 
+Future<void> _changePassword() async {
+  if (_isUpdatingPassword) return;
+
+  final currentPassword = _currentPasswordController.text;
+  final newPassword = _newPasswordController.text;
+  final confirmPassword = _confirmPasswordController.text;
+
+  if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+    debugPrint('PASSWORD CHANGE FAILED: missing fields');
+    return;
+  }
+
+  if (newPassword != confirmPassword) {
+    debugPrint('PASSWORD CHANGE FAILED: new passwords do not match');
+    return;
+  }
+
+  final token = await AuthStorage.readToken();
+
+  if (token == null) {
+    debugPrint('PASSWORD CHANGE FAILED: no auth token');
+    return;
+  }
+
+  setState(() {
+    _isUpdatingPassword = true;
+  });
+
+  try {
+    final response = await http.post(
+      ApiClient.uri('/auth/change-password'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+
+      setState(() {
+        _isEditingPassword = false;
+      });
+
+      debugPrint('PASSWORD CHANGE SUCCESS');
+      return;
+    }
+
+    if (body is Map && body['detail'] is String) {
+      throw Exception(body['detail']);
+    }
+
+    throw Exception('Failed to update password.');
+  } catch (error) {
+    debugPrint('PASSWORD CHANGE ERROR: $error');
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isUpdatingPassword = false;
+      });
+    }
+  }
+}
+
 Widget _avatarSection() {
     return Center(
       child: Column(
@@ -513,10 +586,8 @@ Widget _avatarSection() {
             Row(
               children: [
                 _smallPrimaryButton(
-  'Update',
-  () {
-    debugPrint('UPDATE PASSWORD PRESSED');
-  },
+  _isUpdatingPassword ? '...' : 'Update',
+  _changePassword,
 ),
                 const SizedBox(width: 8),
                 _smallGhostButton('Cancel', _cancelPasswordEdit),
