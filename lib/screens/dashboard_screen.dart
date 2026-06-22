@@ -374,6 +374,7 @@ GestureDetector(
         builder: (context) => SetupScreen(
   name: (_user?['name'] as String?) ?? 'User',
   email: (_user?['email'] as String?) ?? '',
+  avatarUrl: _user?['avatar_url'] as String?,
           personalGoalKm: 100,
           protectionsLeftYear: 2,
           onBack: () => Navigator.pop(context),

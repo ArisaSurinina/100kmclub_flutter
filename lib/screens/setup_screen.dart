@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/api_client.dart';
+
 class SetupScreen extends StatefulWidget {
   const SetupScreen({
     super.key,
@@ -231,6 +233,19 @@ class _ProfileCard extends StatelessWidget {
   final String email;
   final String? avatarUrl;
 
+  String? _fullAvatarUrl() {
+  if (avatarUrl == null || avatarUrl!.isEmpty) {
+    return null;
+  }
+
+  if (avatarUrl!.startsWith('http://') ||
+      avatarUrl!.startsWith('https://')) {
+    return avatarUrl;
+  }
+
+  return '${ApiClient.backendBaseUrl}$avatarUrl';
+}
+
   @override
   Widget build(BuildContext context) {
     final String initial = name.trim().isNotEmpty
@@ -249,9 +264,9 @@ class _ProfileCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             clipBehavior: Clip.antiAlias,
-            child: avatarUrl != null && avatarUrl!.isNotEmpty
-                ? Image.network(
-                    avatarUrl!,
+            child: _fullAvatarUrl() != null
+    ? Image.network(
+        _fullAvatarUrl()!,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => _AvatarInitial(initial),
                   )
