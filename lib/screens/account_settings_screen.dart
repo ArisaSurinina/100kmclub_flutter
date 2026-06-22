@@ -8,6 +8,8 @@ import 'package:http_parser/http_parser.dart';
 import '../services/api_client.dart';
 import '../services/auth_storage.dart';
 
+import '../widgets/app_snack_bar.dart';
+
 class AccountSettingsScreen extends StatefulWidget {
   final String name;
   final String email;
@@ -367,8 +369,9 @@ Future<void> _changePassword() async {
         _isEditingPassword = false;
       });
 
-      debugPrint('PASSWORD CHANGE SUCCESS');
-      return;
+      AppSnackBar.success(context, 'Password updated successfully.');
+debugPrint('PASSWORD CHANGE SUCCESS');
+return;
     }
 
     if (body is Map && body['detail'] is String) {
@@ -377,7 +380,11 @@ Future<void> _changePassword() async {
 
     throw Exception('Failed to update password.');
   } catch (error) {
-    debugPrint('PASSWORD CHANGE ERROR: $error');
+    AppSnackBar.error(
+  context,
+  error.toString().replaceFirst('Exception: ', ''),
+);
+debugPrint('PASSWORD CHANGE ERROR: $error');
   } finally {
     if (mounted) {
       setState(() {
