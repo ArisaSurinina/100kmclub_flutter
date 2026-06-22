@@ -61,7 +61,7 @@ void initState() {
   void _cancelNameEdit() {
     setState(() {
       _isEditingName = false;
-      _nameController.text = widget.name;
+      _nameController.text = _displayName;
     });
   }
 
@@ -338,10 +338,10 @@ Widget _avatarSection() {
         )
       : Center(
           child: Text(
-            widget.name.isNotEmpty
-                ? widget.name[0].toUpperCase()
-                : '?',
-            style: const TextStyle(
+  _displayName.isNotEmpty
+      ? _displayName[0].toUpperCase()
+      : '?',
+  style: const TextStyle(
               color: Colors.black,
               fontSize: 36,
               fontWeight: FontWeight.w700,
