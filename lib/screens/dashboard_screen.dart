@@ -378,8 +378,8 @@ GestureDetector(
           personalGoalKm: 100,
           protectionsLeftYear: 2,
           onBack: () => Navigator.pop(context),
-          onOpenAccountSettings: () {
-  Navigator.push(
+          onOpenAccountSettings: () async {
+  await Navigator.push(
     context,
     MaterialPageRoute(
       builder: (context) => AccountSettingsScreen(
@@ -389,6 +389,8 @@ GestureDetector(
       ),
     ),
   );
+
+  await _loadUser();
 },
           onViewRules: () {},
           onChangeGoal: () {},

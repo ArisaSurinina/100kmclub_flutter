@@ -280,13 +280,26 @@ Future<void> _saveDisplayName() async {
     if (response.statusCode == 200 &&
         body is Map &&
         body['name'] is String) {
-      setState(() {
-        _displayName = body['name'] as String;
-        _isEditingName = false;
-      });
+      final savedName = body['name'] as String;
 
-      debugPrint('NAME SAVE SUCCESS: ${body['name']}');
-      return;
+setState(() {
+  _displayName = savedName;
+  _nameController.text = savedName;
+  _isEditingName = false;
+});
+
+final storedUser = await AuthStorage.readUser();
+
+if (storedUser != null) {
+  storedUser['name'] = savedName;
+  await AuthStorage.saveAuth(
+    token: token,
+    user: storedUser,
+  );
+}
+
+debugPrint('NAME SAVE SUCCESS: ${body['name']}');
+return;
     }
 
     throw Exception(body.toString());

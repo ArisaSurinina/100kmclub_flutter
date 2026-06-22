@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_client.dart';
+import '../services/auth_storage.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({
@@ -27,7 +28,7 @@ class SetupScreen extends StatefulWidget {
   final int protectionsLeftYear;
 
   final VoidCallback? onBack;
-  final VoidCallback? onOpenAccountSettings;
+  final Future<void> Function()? onOpenAccountSettings;
   final VoidCallback? onViewRules;
   final VoidCallback? onChangeGoal;
   final VoidCallback? onActivateProtection;
@@ -40,6 +41,9 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
+late String _name;
+late String _email;
+String? _avatarUrl;
   static const Color pageTop = Color(0xFF1A1A1F);
   static const Color pageBottom = Color(0xFF16161A);
   static const Color cardBg = Color.fromRGBO(255, 255, 255, 0.02);
@@ -53,6 +57,26 @@ class _SetupScreenState extends State<SetupScreen> {
   static const Color purpleLight = Color(0xFFC4B5FD);
   static const Color yellow = Color(0xFFFFC107);
   static const Color gold = Color(0xFFFFB832);
+
+  @override
+void initState() {
+  super.initState();
+  _name = widget.name;
+  _email = widget.email;
+  _avatarUrl = widget.avatarUrl;
+}
+
+Future<void> _refreshUser() async {
+  final user = await AuthStorage.readUser();
+
+  if (!mounted || user == null) return;
+
+  setState(() {
+    _name = (user['name'] as String?) ?? _name;
+    _email = (user['email'] as String?) ?? _email;
+    _avatarUrl = user['avatar_url'] as String?;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -84,25 +108,28 @@ class _SetupScreenState extends State<SetupScreen> {
                     _Header(onBack: widget.onBack),
                     const SizedBox(height: 24),
                     _ProfileCard(
-                      name: widget.name,
-                      email: widget.email,
-                      avatarUrl: widget.avatarUrl,
+                      name: _name,
+                      email: _email,
+                      avatarUrl: _avatarUrl,
                     ),
                     const SizedBox(height: 24),
                     _SectionCard(
-                      icon: Icons.settings_outlined,
-                      iconColor: Colors.white60,
-                      title: 'Account Settings',
-                      helper: 'Manage your personal information.',
-                      child: _NavRow(
-                        label: 'Open settings',
-                        backgroundColor:
-                            const Color.fromRGBO(255, 255, 255, 0.04),
-                        borderColor:
-                            const Color.fromRGBO(255, 255, 255, 0.08),
-                        onTap: widget.onOpenAccountSettings,
-                      ),
-                    ),
+  icon: Icons.settings_outlined,
+  iconColor: Colors.white60,
+  title: 'Account Settings',
+  helper: 'Manage your personal information.',
+  child: _NavRow(
+    label: 'Open settings',
+    backgroundColor:
+        const Color.fromRGBO(255, 255, 255, 0.04),
+    borderColor:
+        const Color.fromRGBO(255, 255, 255, 0.08),
+    onTap: () async {
+      await widget.onOpenAccountSettings?.call();
+      await _refreshUser();
+    },
+  ),
+),
                     const SizedBox(height: 24),
                     _SectionCard(
                       icon: Icons.menu_book_outlined,
@@ -170,7 +197,10 @@ class _SetupScreenState extends State<SetupScreen> {
                             const Color.fromRGBO(255, 184, 50, 0.06),
                         borderColor:
                             const Color.fromRGBO(255, 184, 50, 0.15),
-                        onTap: widget.onOpenSubscription,
+                        onTap: () async {
+  await widget.onOpenAccountSettings?.call();
+  await _refreshUser();
+},
                       ),
                     ),
                     const SizedBox(height: 24),
