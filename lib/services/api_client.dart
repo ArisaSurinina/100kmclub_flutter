@@ -1,6 +1,6 @@
 class ApiClient {
   static const String backendBaseUrl =
-      'https://source-of-truth-15.preview.emergentagent.com';
+      'https://100kmclubemergent-production.up.railway.app';
 
   static const String apiRoot = '$backendBaseUrl/api';
 
