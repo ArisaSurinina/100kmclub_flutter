@@ -41,9 +41,11 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-late String _name;
-late String _email;
-String? _avatarUrl;
+  late String _name;
+  late String _email;
+  String? _avatarUrl;
+  int _avatarCacheKey = 0;
+
   static const Color pageTop = Color(0xFF1A1A1F);
   static const Color pageBottom = Color(0xFF16161A);
   static const Color cardBg = Color.fromRGBO(255, 255, 255, 0.02);
@@ -75,6 +77,7 @@ Future<void> _refreshUser() async {
     _name = (user['name'] as String?) ?? _name;
     _email = (user['email'] as String?) ?? _email;
     _avatarUrl = user['avatar_url'] as String?;
+    _avatarCacheKey++;
   });
 }
 
@@ -108,10 +111,11 @@ Future<void> _refreshUser() async {
                     _Header(onBack: widget.onBack),
                     const SizedBox(height: 24),
                     _ProfileCard(
-                      name: _name,
-                      email: _email,
-                      avatarUrl: _avatarUrl,
-                    ),
+  name: _name,
+  email: _email,
+  avatarUrl: _avatarUrl,
+  avatarCacheKey: _avatarCacheKey,
+),
                     const SizedBox(height: 24),
                     _SectionCard(
   icon: Icons.settings_outlined,
@@ -187,22 +191,19 @@ Future<void> _refreshUser() async {
                     ),
                     const SizedBox(height: 24),
                     _SectionCard(
-                      icon: Icons.workspace_premium_outlined,
-                      iconColor: gold,
-                      title: 'Subscription',
-                      helper: 'Commitment is stronger together.',
-                      child: _NavRow(
-                        label: 'Unlock full access',
-                        backgroundColor:
-                            const Color.fromRGBO(255, 184, 50, 0.06),
-                        borderColor:
-                            const Color.fromRGBO(255, 184, 50, 0.15),
-                        onTap: () async {
-  await widget.onOpenAccountSettings?.call();
-  await _refreshUser();
-},
-                      ),
-                    ),
+  icon: Icons.workspace_premium_outlined,
+  iconColor: gold,
+  title: 'Subscription',
+  helper: 'Commitment is stronger together.',
+  child: _NavRow(
+    label: 'Unlock full access',
+    backgroundColor:
+        const Color.fromRGBO(255, 184, 50, 0.06),
+    borderColor:
+        const Color.fromRGBO(255, 184, 50, 0.15),
+    onTap: widget.onOpenSubscription,
+  ),
+),
                     const SizedBox(height: 24),
                     _LogoutButton(onTap: widget.onLogout),
                   ],
@@ -257,23 +258,27 @@ class _ProfileCard extends StatelessWidget {
     required this.name,
     required this.email,
     this.avatarUrl,
+    required this.avatarCacheKey,
   });
 
   final String name;
   final String email;
   final String? avatarUrl;
+  final int avatarCacheKey;
 
   String? _fullAvatarUrl() {
   if (avatarUrl == null || avatarUrl!.isEmpty) {
     return null;
   }
 
+  final separator = avatarUrl!.contains('?') ? '&' : '?';
+
   if (avatarUrl!.startsWith('http://') ||
       avatarUrl!.startsWith('https://')) {
-    return avatarUrl;
+    return '$avatarUrl${separator}v=$avatarCacheKey';
   }
 
-  return '${ApiClient.backendBaseUrl}$avatarUrl';
+  return '${ApiClient.backendBaseUrl}$avatarUrl${separator}v=$avatarCacheKey';
 }
 
   @override

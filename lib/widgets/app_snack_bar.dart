@@ -61,11 +61,12 @@ class _AppSnackBarOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final style = _styleFor(type);
 
-    return Positioned(
-      top: MediaQuery.of(context).padding.top + 32,
-      left: 16,
-      right: 16,
-      child: SafeArea(
+  return Positioned(
+  top: MediaQuery.of(context).padding.top + 32,
+  left: 16,
+  right: 16,
+  child: IgnorePointer(
+    child: SafeArea(
         child: Center(
           child: Material(
             color: Colors.transparent,
@@ -113,7 +114,8 @@ class _AppSnackBarOverlay extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 
   _AppSnackBarStyle _styleFor(AppSnackBarType type) {

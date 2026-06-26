@@ -221,12 +221,22 @@ Future<void> _pickAndUploadAvatar() async {
       final newAvatarUrl = body['avatar_url'] as String;
 
       setState(() {
-         _avatarUrl = newAvatarUrl;
-         _avatarCacheKey++;
-    });
+  _avatarUrl = newAvatarUrl;
+  _avatarCacheKey++;
+});
 
-      debugPrint('AVATAR UPLOAD SUCCESS: $newAvatarUrl');
-      return;
+final storedUser = await AuthStorage.readUser();
+
+if (storedUser != null) {
+  storedUser['avatar_url'] = newAvatarUrl;
+  await AuthStorage.saveAuth(
+    token: token,
+    user: storedUser,
+  );
+}
+
+debugPrint('AVATAR UPLOAD SUCCESS: $newAvatarUrl');
+return;
     }
 
     if (body is Map && body['detail'] is String) {
@@ -412,11 +422,44 @@ Widget _avatarSection() {
   child: _fullAvatarUrl() != null
     ? Image.network(
         _fullAvatarUrl()!,
-          width: 96,
-          height: 96,
-          fit: BoxFit.cover,
-        )
-      : Center(
+        width: 96,
+        height: 96,
+        fit: BoxFit.cover,
+        gaplessPlayback: true,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+
+          return Center(
+            child: Text(
+              _displayName.isNotEmpty
+                  ? _displayName[0].toUpperCase()
+                  : '?',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 36,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('AVATAR IMAGE LOAD ERROR: $error');
+
+          return Center(
+            child: Text(
+              _displayName.isNotEmpty
+                  ? _displayName[0].toUpperCase()
+                  : '?',
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 36,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          );
+        },
+      )
+    : Center(
           child: Text(
   _displayName.isNotEmpty
       ? _displayName[0].toUpperCase()

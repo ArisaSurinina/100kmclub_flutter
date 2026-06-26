@@ -379,16 +379,22 @@ GestureDetector(
           protectionsLeftYear: 2,
           onBack: () => Navigator.pop(context),
           onOpenAccountSettings: () async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => AccountSettingsScreen(
-        name: (_user?['name'] as String?) ?? 'User',
-        email: (_user?['email'] as String?) ?? '',
-        avatarUrl: _user?['avatar_url'] as String?,
-      ),
+  await Navigator.of(context).push(
+  PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        AccountSettingsScreen(
+      name: (_user?['name'] as String?) ?? 'User',
+      email: (_user?['email'] as String?) ?? '',
+      avatarUrl: _user?['avatar_url'] as String?,
     ),
-  );
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  ),
+);
 
   await _loadUser();
 },
